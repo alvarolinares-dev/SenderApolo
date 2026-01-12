@@ -8,7 +8,7 @@ echo =======================================================
 REM 1. Check if Python is installed
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [ERROR] Python no esta instalado o no se encuentra en el PATH.
+    echo [ERROR] No se encuentra el comando 'python'.
     echo Por favor, instala Python desde: https://www.python.org/downloads/
     echo ASEGURATE DE MARCAR LA CASILLA "Add Python to PATH" DURANTE LA INSTALACION.
     echo.
@@ -17,9 +17,16 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
+REM 1.5 Ensure PIP is installed (Fix for 'pip not recognized' if python exists)
+echo [INFO] Verificando instalacion de PIP...
+python -m ensurepip --default-pip >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [WARN] No se pudo ejecutar ensurepip, intentando continuar...
+)
+
 REM 2. Create virtual environment if it doesn't exist
 if not exist "venv" (
-    echo [INFO] Creando entorno virtual (esto puede tardar unos segundos)...
+    echo [INFO] Creando entorno virtual...
     python -m venv venv
     if %errorlevel% neq 0 (
         echo [ERROR] Fallo al crear el entorno virtual.
@@ -30,20 +37,22 @@ if not exist "venv" (
 )
 
 REM 3. Activate virtual environment and install requirements
-echo [INFO] Verificando dependencias...
+echo [INFO] Activando entorno y verificando librerias...
 call venv\Scripts\activate.bat
 
-REM Update pip just in case
+REM Update pip explicitly
+echo [INFO] Actualizando/Instalando PIP...
 python -m pip install --upgrade pip >nul 2>&1
 
-REM Install requirements
+REM Install requirements explicitly highlighting Streamlit
+echo [INFO] Instalando Streamlit y otras dependencias (esto puede tardar)...
 pip install -r requirements.txt
 if %errorlevel% neq 0 (
     echo [ERROR] Fallo al instalar las dependencias. Revisa tu conexion a internet.
     pause
     exit /b
 )
-echo [OK] Dependencias instaladas correctamente.
+echo [OK] Streamlit y dependencias instaladas correctamente.
 
 REM 4. Run the application
 echo.
@@ -55,6 +64,6 @@ echo Si el navegador no se abre automaticamente, copia la URL que aparece abajo.
 echo Para detener la aplicacion, cierra esta ventana.
 echo.
 
-streamlit run src/app.py
+python -m streamlit run src/app.py
 
 pause
