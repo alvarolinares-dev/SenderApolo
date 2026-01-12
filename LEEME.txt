@@ -22,4 +22,24 @@ PASO 2: EJECUTAR EL PROGRAMA
 3. Se abrirá una ventana negra que instalará todo lo necesario automáticamente.
 4. Espera a que termine. La aplicación se abrirá en tu navegador.
 
+
 Nota: La primera vez puede tardar unos minutos instalando las librerías. Las próximas veces será rápido.
+
+
+PARA MAC (AMIGOS CON MACBOOK)
+=============================
+Como usar esto en una Mac:
+
+1. INSTALAR PYTHON
+   - Dale doble click al archivo "descargar_python_mac.command".
+   - Si dice que "no se puede abrir porque es de un desarrollador no identificado":
+     -> Haz Click Derecho > Abrir > Confirmar "Abrir".
+   - Instala Python desde la web que se abre.
+
+2. EJECUTAR EL PROGRAMA
+   - Dale doble click a "iniciar_programa_mac.command".
+   - (Igual, si bloquea: Click Derecho > Abrir).
+   - IMPORTANTE: La primera vez te pedirá PERMISOS DE ACCESIBILIDAD o GRABAR PANTALLA.
+     -> Tienes que darle "Sí" o ir a Ajustes > Privacidad > Accesibilidad y marcar "Terminal" (o la app que uses).
+     -> Esto es obligatorio para que el programa pueda escribir en WhatsApp por ti.
+
