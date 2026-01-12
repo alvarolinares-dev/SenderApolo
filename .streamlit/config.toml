@@ -1,0 +1,4 @@
+[theme]
+primaryColor = "#00e676"
+# backgroundColor, secondaryBackgroundColor, and textColor are omitted 
+# to allow Streamlit to automatically adapt to the user's system preference (Light/Dark).

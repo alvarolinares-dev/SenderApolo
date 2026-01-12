@@ -14,71 +14,24 @@ st.set_page_config(
 )
 
 # --- CSS personalizado: Estilo TechCO (Dark & Green) ---
+# --- CSS personalizado: Ajustes mínimos ---
 st.markdown("""
     <style>
-    /* Dark Theme Base */
-    .stApp {
-        background-color: #0d0d0d; /* Very Dark Grey/Black */
-        color: #ffffff;
-    }
-    
-    /* Inputs */
-    .stTextInput > div > div > input, 
-    .stTextArea > div > div > textarea {
-        background-color: #1e1e1e;
-        color: white;
-        border: 1px solid #333;
-    }
-    
-    /* Buttons - Primary Green */
-    .stButton>button {
-        width: 100%;
-        background-color: #00e676; /* TechCO Neon Green Approx */
-        color: #000000;
-        font-weight: bold;
-        border-radius: 6px;
-        padding: 0.6rem 1rem;
-        border: none;
-        transition: all 0.3s;
-    }
-    .stButton>button:hover {
-        background-color: #00c853;
-        color: white;
-        box-shadow: 0 0 10px #00e676; /* Glow effect */
-    }
-    
-    /* Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: #121212;
-        border-right: 1px solid #333;
-    }
-    
-    /* Headers */
-    h1, h2, h3 {
-        color: #00e676 !important; /* Green Titles */
-        font-family: 'Segoe UI', sans-serif;
-    }
-    
-    /* Info/Warning Boxes */
+    /* Info/Warning Boxes - Hacerlos dinámicos sería ideal, pero por ahora simplificamos */
     .warning-box {
-        background-color: #332b00;
-        border-left: 6px solid #ffcc00;
         padding: 15px;
         border-radius: 5px;
-        color: #ffcc00;
+        border-left: 6px solid #ffcc00;
+        background-color: rgba(255, 204, 0, 0.1);
+        color: inherit; 
         font-weight: bold;
         margin-bottom: 20px;
     }
     
-    /* Dataframes */
-    [data-testid="stDataFrame"] {
-        border: 1px solid #333;
-    }
-
-    /* Success Message */
-    .stSuccess {
-        background-color: #003300;
-        color: #00e676;
+    /* Buttons - Primary Green via config.toml mostly, but force width if needed */
+    .stButton>button {
+        width: 100%;
+        font-weight: bold;
     }
     </style>
 """, unsafe_allow_html=True)
