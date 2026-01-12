@@ -1,0 +1,21 @@
+INSTRUCCIONES PARA INSTALAR Y EJECUTAR
+=======================================
+
+Si tienes problemas para ejecutar el programa, sigue estos pasos:
+
+PASO 1: INSTALAR PYTHON (Si no lo tienes)
+-----------------------------------------
+1. Ve a https://www.python.org/downloads/
+2. Descarga la versión más reciente para Windows.
+3. Ejecuta el instalador y, MUY IMPORTANTE:
+   >>> MARCA LA CASILLA QUE DICE "Add Python to PATH" antes de dar click en Install. <<<
+   Si no marcas esa casilla, el programa no funcionará.
+
+PASO 2: EJECUTAR EL PROGRAMA
+----------------------------
+1. En esta carpeta, busca el archivo llamado "iniciar_programa.bat" (puede verse solo como "iniciar_programa").
+2. Dale doble click.
+3. Se abrirá una ventana negra que instalará todo lo necesario automáticamente.
+4. Espera a que termine. La aplicación se abrirá en tu navegador.
+
+Nota: La primera vez puede tardar unos minutos instalando las librerías. Las próximas veces será rápido.
