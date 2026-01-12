@@ -40,13 +40,14 @@ REM 3. Activate virtual environment and install requirements
 echo [INFO] Activando entorno y verificando librerias...
 call venv\Scripts\activate.bat
 
-REM Update pip explicitly
-echo [INFO] Actualizando/Instalando PIP...
-python -m pip install --upgrade pip >nul 2>&1
+REM Update pip and build tools
+echo [INFO] Actualizando PIP y herramientas de construccion...
+python -m pip install --upgrade pip setuptools wheel >nul 2>&1
 
-REM Install requirements explicitly highlighting Streamlit
-echo [INFO] Instalando Streamlit y otras dependencias (esto puede tardar)...
-pip install -r requirements.txt
+REM Install requirements (prefer binaries to avoid compilation errors)
+echo [INFO] Instalando dependencias (forzando binarios)...
+pip install -r requirements.txt --prefer-binary
+
 if %errorlevel% neq 0 (
     echo [ERROR] Fallo al instalar las dependencias. Revisa tu conexion a internet.
     pause
