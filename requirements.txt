@@ -5,4 +5,4 @@ pyautogui
 openpyxl
 opencv-python
 pillow
-numpy<2.0.0
+

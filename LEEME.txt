@@ -3,13 +3,17 @@ INSTRUCCIONES PARA INSTALAR Y EJECUTAR
 
 Si tienes problemas para ejecutar el programa, sigue estos pasos:
 
-PASO 1: INSTALAR PYTHON (Si no lo tienes)
+PASO 1: INSTALAR PYTHON 3.11 (IMPORTANTE)
 -----------------------------------------
-1. Ve a https://www.python.org/downloads/
-2. Descarga la versión más reciente para Windows.
-3. Ejecuta el instalador y, MUY IMPORTANTE:
-   >>> MARCA LA CASILLA QUE DICE "Add Python to PATH" antes de dar click en Install. <<<
-   Si no marcas esa casilla, el programa no funcionará.
+El error que aparecio es porque instalaste una versio muy nueva de Python (probablemente la 3.13) que aun no es compatible con todas las librerias.
+
+1. Desinstala el Python que tienes ahora.
+2. Ve a este link para descargar **Python 3.11**:
+   https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe
+   (Ese enlace descarga la versión exacta que funciona).
+3. Ejecuta el archivo descargado.
+4. >>> ¡IMPORTANTE! MARCA LA CASILLA "Add Python.exe to PATH" antes de dar click en Install. <<<
+
 
 PASO 2: EJECUTAR EL PROGRAMA
 ----------------------------
