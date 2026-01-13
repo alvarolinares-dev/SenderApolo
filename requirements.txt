@@ -6,3 +6,5 @@ openpyxl
 opencv-python
 pillow
 
+
+pywin32
