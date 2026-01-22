@@ -1,0 +1,67 @@
+GUÍA SOLUCIÓN ERROR "NO SE PUDO ABRIR" O "SOFTWARE MALICIOSO" EN MAC
+========================================================================
+
+Si al intentar abrir "descargar_python_mac.command" o "iniciar_programa_mac.command" te sale un error con un triángulo amarillo que dice:
+- "Apple no pudo verificar..."
+- "No se pudo abrir..."
+- "...puede contener software malicioso"
+
+ESTO ES NORMAL. Mac bloquea por seguridad cualquier archivo que no venga de la App Store.
+
+-------------------------------------------------------------------------
+SOLUCIÓN (Hacer esto una vez por cada archivo):
+-------------------------------------------------------------------------
+
+1. NO le des doble click directo.
+2. Haz **CLICK DERECHO** (o Control + Click) sobre el archivo.
+3. En el menú que sale, elige **"Abrir"**.
+4. Te saldrá la misma ventana de advertencia, pero AHORA tendrá un botón nuevo: **"Abrir"** o **"Open"**.
+5. Dale a ese botón "Abrir".
+
+¡Listo! La próxima vez ya podrás abrirlo con doble click normal.
+
+RECUERDA:
+Tienes que hacer esto tanto para:
+1. `descargar_python_mac.command`
+2. `iniciar_programa_mac.command`
+
+
+-------------------------------------------------------------------------
+OPCIÓN 2: SI LO DE ARRIBA NO FUNCIONA (SOLUCIÓN DEFINITIVA)
+-------------------------------------------------------------------------
+Si sigue sin dejarte, haremos esto para quitar el bloqueo de seguridad a toda la carpeta:
+
+1. Abre la aplicación **Terminal** en tu Mac (puedes buscarla pulsando Command + Espacio y escribiendo "Terminal").
+2. Escribe el siguiente comando (¡no pulses Enter todavía!):
+   sudo xattr -cr 
+   
+   (Asegúrate de dejar un espacio al final después de "-cr ").
+3. Arrastra la carpeta donde están estos archivos (la carpeta "sender") dentro de la ventana negra de la Terminal.
+   (Esto escribirá la ruta de la carpeta automáticamente).
+4. Ahora sí, pulsa **ENTER**.
+5. Te pedirá tu contraseña de inicio de sesión (la que usas para entrar al Mac).
+   -> OJO: Al escribir la contraseña NO VERÁS NADA en pantalla (ni asteriscos). Es normal. Escríbela "a ciegas" y pulsa Enter.
+
+Una vez hecho esto, intenta abrir los archivos de nuevo con doble click. Ya deberían funcionar.
+
+
+-------------------------------------------------------------------------
+ERROR: "NO TIENES LOS PRIVILEGIOS DE ACCESO NECESARIOS"
+-------------------------------------------------------------------------
+Si ya no sale el error de seguridad, pero ahora dice que **"No tienes privilegios..."**:
+
+Significa que los archivos perdieron su permiso de "ejecución" al pasarse de Windows a Mac.
+Se arregla muy fácil (parecido al paso anterior):
+
+1. Abre la **Terminal**.
+2. Escribe esto y deja un **espacio al final**:
+   chmod +x 
+   
+3. Arrastra el archivo `descargar_python_mac.command` a la ventana negra.
+4. Pulsa **ENTER**.
+5. Repite lo mismo para el otro archivo:
+   - Escribe `chmod +x ` (con espacio).
+   - Arrastra `iniciar_programa_mac.command`.
+   - Pulsa **ENTER**.
+
+¡Ahora sí! Dale doble click y funcionará.

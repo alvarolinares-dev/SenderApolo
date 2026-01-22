@@ -28,18 +28,17 @@ Nota: La primera vez puede tardar unos minutos instalando las librerías. Las pr
 
 PARA MAC (AMIGOS CON MACBOOK)
 =============================
-Como usar esto en una Mac:
+IMPORTANTE: Si te sale error de "Software malicioso" o "No se pudo verificar", lee el archivo "LEEME_MAC.txt".
 
 1. INSTALAR PYTHON
-   - Dale doble click al archivo "descargar_python_mac.command".
-   - Si dice que "no se puede abrir porque es de un desarrollador no identificado":
-     -> Haz Click Derecho > Abrir > Confirmar "Abrir".
-   - Instala Python desde la web que se abre.
+   - Intenta abrir "descargar_python_mac.command".
+   - Si no te deja: Click Derecho > Abrir > Botón "Abrir".
+   - Sigue las instrucciones para instalar Python.
 
 2. EJECUTAR EL PROGRAMA
-   - Dale doble click a "iniciar_programa_mac.command".
-   - (Igual, si bloquea: Click Derecho > Abrir).
-   - IMPORTANTE: La primera vez te pedirá PERMISOS DE ACCESIBILIDAD o GRABAR PANTALLA.
-     -> Tienes que darle "Sí" o ir a Ajustes > Privacidad > Accesibilidad y marcar "Terminal" (o la app que uses).
+   - Abre "iniciar_programa_mac.command".
+   - (Si no te deja: Click Derecho > Abrir > Botón "Abrir").
+   - IMPORTANTE: Dale permisos de ACCESIBILIDAD cuando te los pida.
+     -> Ajustes > Privacidad > Accesibilidad > Activa "Terminal".
      -> Esto es obligatorio para que el programa pueda escribir en WhatsApp por ti.
 
