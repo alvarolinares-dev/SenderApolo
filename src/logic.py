@@ -5,21 +5,65 @@ import os
 import pyautogui
 import random
 import traceback
+import platform
+import subprocess
+import webbrowser
+import pyperclip
 from datetime import datetime
+
+# Helper para Mac: Copiar imagen al portapapeles
+def copy_image_to_clipboard_mac(path):
+    abs_path = os.path.abspath(path)
+    if not os.path.exists(abs_path):
+        raise FileNotFoundError(f"No existe: {abs_path}")
+        
+    ext = os.path.splitext(abs_path)[1].lower()
+    # Determinar tipo de archivo para AppleScript
+    if ext in ['.png']:
+        file_type = "«class PNGf»"
+    elif ext in ['.jpg', '.jpeg']:
+        file_type = "JPEG picture"
+    else:
+        file_type = "TIFF picture" # Intento genérico
+
+    cmd = f'''
+    set the clipboard to (read (POSIX file "{abs_path}") as {file_type})
+    '''
+    try:
+        subprocess.run(["osascript", "-e", cmd], check=True)
+    except Exception as e:
+        print(f"Error Mac Clipboard: {e}")
+        raise e
+
+# Función específica para Mac
+def send_whatsapp_mac(phone, image_path, caption, log_callback, wait_time=15):
+    # 1. Copiar imagen
+    log_callback("   🍎 (Mac) Copiando imagen al portapapeles...")
+    copy_image_to_clipboard_mac(image_path)
+    
+    # 2. Abrir WhatsApp Web limpio (solo teléfono)
+    log_callback("   🍎 (Mac) Abriendo navegador...")
+    url = f"https://web.whatsapp.com/send?phone={phone}"
+    webbrowser.open(url)
+    
+    # 3. Esperar carga
+    time.sleep(wait_time)
+    
+    # 4. Pegar Imagen (Cmd+V)
+    log_callback("   🍎 (Mac) Pegando imagen...")
+    pyautogui.hotkey('command', 'v')
+    time.sleep(2) # Esperar modal de vista previa
+    
+    # 5. Pegar Caption
+    if caption:
+        log_callback("   🍎 (Mac) Pegando mensaje...")
+        pyperclip.copy(caption)
+        pyautogui.hotkey('command', 'v')
+        time.sleep(1)
 
 def process_newsletter(df, image_path, message_template, log_callback, error_image_path=None):
     """
     Ejecuta la lógica de envío del boletín.
-    
-    Args:
-        df (pd.DataFrame): DataFrame con columnas [Nombre, Telefono]
-        image_path (str): Ruta absoluta a la imagen
-        message_template (str): Plantilla del mensaje
-        log_callback (func): Función para enviar logs a la UI (ej. st.write)
-        error_image_path (str, optional): Ruta a la captura de pantalla de error (para detección visual)
-    
-    Returns:
-        dict: Reporte de éxito/error + Lista detallada de envíos.
     """
     
     if not image_path or not os.path.exists(image_path):
@@ -41,7 +85,6 @@ def process_newsletter(df, image_path, message_template, log_callback, error_ima
     total = len(df)
     report_details = [] 
     
-    # Pre-filtering: Clean and remove empty numbers to avoid "ghost" loops
     valid_rows = []
     for index, fila in df.iterrows():
         n = str(fila.iloc[1]).replace("nan", "").replace(".0", "").strip()
@@ -51,8 +94,8 @@ def process_newsletter(df, image_path, message_template, log_callback, error_ima
     total_valid = len(valid_rows)
     log_callback(f"ℹ️ Se encontraron {total_valid} contactos válidos de {total} filas.")
     
-    # Enable Fail-Safe: Moving mouse to corner will throw exception
     pyautogui.FAILSAFE = True
+    is_mac = platform.system() == 'Darwin'
 
     for i, (original_index, fila) in enumerate(valid_rows):
         current_report = {
@@ -73,21 +116,26 @@ def process_newsletter(df, image_path, message_template, log_callback, error_ima
             current_report["Telefono"] = numero
             log_callback(f"📨 [{i+1}/{total_valid}] Procesando: {nombre} ({numero})")
 
-            # Personalización: Reemplazar {Nombre} con el nombre del contacto
             mensaje = message_template.replace("{Nombre}", nombre)
 
             log_callback("   ⏳ Abriendo WhatsApp...")
             
             try:
-                pywhatkit.sendwhats_image(
-                    receiver=numero,
-                    img_path=image_path,
-                    caption=mensaje,
-                    wait_time=15, 
-                    tab_close=False 
-                )
+                if is_mac:
+                    # Lógica MacOS
+                    send_whatsapp_mac(numero, image_path, mensaje, log_callback, wait_time=15)
+                    # Al salir de aquí, estamos en la pantalla de vista previa con texto pegado
+                else:
+                    # Lógica Windows (Original)
+                    pywhatkit.sendwhats_image(
+                        receiver=numero,
+                        img_path=image_path,
+                        caption=mensaje,
+                        wait_time=15, 
+                        tab_close=False 
+                    )
                 
-                log_callback("   ⏳ Esperando adjunto...")
+                log_callback("   ⏳ Esperando adjunto/preparación...")
                 time.sleep(3)
                 
                 # --- VISUAL ERROR CHECK START ---
@@ -95,13 +143,11 @@ def process_newsletter(df, image_path, message_template, log_callback, error_ima
                 if error_image_path:
                     try:
                         # Busca la imagen de error en la pantalla
-                        # confidence=0.8 ayuda a que sea un poco flexible
                         pos = pyautogui.locateOnScreen(error_image_path, confidence=0.8)
                         if pos:
                             log_callback("   🚨 DETECTADO AVISO DE NÚMERO INVÁLIDO")
                             error_detected = True
                     except Exception as visual_e:
-                        # Si falla locateOnScreen (ej. si falta opencv), lo ignoramos
                         log_callback(f"   ⚠️ Falló chequeo visual: {visual_e}")
                 
                 if error_detected:
@@ -112,7 +158,10 @@ def process_newsletter(df, image_path, message_template, log_callback, error_ima
                     report_details.append(current_report)
                     
                     # Cerrar pestaña del error
-                    pyautogui.hotkey('ctrl', 'w')
+                    if is_mac:
+                        pyautogui.hotkey('command', 'w')
+                    else:
+                        pyautogui.hotkey('ctrl', 'w')
                     time.sleep(1)
                     continue 
                 # --- VISUAL ERROR CHECK END ---
@@ -123,16 +172,18 @@ def process_newsletter(df, image_path, message_template, log_callback, error_ima
                 time.sleep(2)
                 
                 log_callback("   ❌ Cerrando pestaña...")
-                pyautogui.hotkey('ctrl', 'w')
+                if is_mac:
+                    pyautogui.hotkey('command', 'w')
+                else:
+                    pyautogui.hotkey('ctrl', 'w')
                 
                 log_callback("   ✅ Envío completado.")
                 exitosos += 1
                 
-                current_report["Estado"] = "Procesado" # Renamed from Enviado to be safer
+                current_report["Estado"] = "Procesado"
                 current_report["Detalle"] = "OK"
                 report_details.append(current_report)
                 
-                # Don't sleep after the last one
                 if i < total_valid - 1:
                     segundos_espera = random.randint(8, 15)
                     log_callback(f"   🛡️ Anti-spam: Esperando {segundos_espera}s...")
@@ -146,7 +197,7 @@ def process_newsletter(df, image_path, message_template, log_callback, error_ima
                 return {"status": "stopped", "enviados": exitosos, "errores": errores, "details": report_details}
 
             except Exception as e:
-                log_callback(f"   ❌ Error al enviar con PyWhatKit: {e}")
+                log_callback(f"   ❌ Error al enviar: {e}")
                 errores += 1
                 current_report["Estado"] = "Error"
                 current_report["Detalle"] = str(e)
