@@ -218,22 +218,23 @@ def process_newsletter(df, file_path, message_template, log_callback, error_imag
                 
                 log_callback("   ❌ Cerrando pestaña...")
                 if is_mac:
-                    pyautogui.hotkey('command', 'w')
+                    # Mac: Navegar a about:blank en lugar de cerrar la pestaña
+                    # Command+W cierra toda la VENTANA en Mac si es la última pestaña,
+                    # lo que impide que webbrowser.open() funcione para el siguiente mensaje.
+                    log_callback("   🍎 (Mac) Navegando a about:blank (mantener ventana abierta)...")
+                    pyautogui.hotkey('command', 'l')  # Foco en barra de URL
+                    time.sleep(0.5)
+                    pyautogui.typewrite('about:blank', interval=0.02)
+                    time.sleep(0.3)
+                    pyautogui.press('enter')
+                    time.sleep(2)
                 else:
+                    # Windows: Cerrar pestaña normalmente
                     pyautogui.hotkey('ctrl', 'w')
-                
-                # Failsafe para el aviso "¿Quieres salir del sitio web?" del navegador
-                # Usamos un tiempo corto para capturar el modal antes de que el foco vuelva a la app
-                time.sleep(1)
-                pyautogui.press('enter')
-                
-                # Refuerzo para Mac: Probar con 'return' y un log adicional
-                if is_mac:
-                    log_callback("   🍎 (Mac) Enviando refuerzo 'return' para cerrar modal...")
-                    pyautogui.press('return')
-                
-                # Damos un pequeño respiro para que el sistema registre el cierre de la ventana
-                time.sleep(3 if is_mac else 1)
+                    # Failsafe para el aviso "¿Quieres salir del sitio web?" del navegador
+                    time.sleep(1)
+                    pyautogui.press('enter')
+                    time.sleep(1)
                 
                 log_callback("   ✅ Envío completado.")
                 exitosos += 1
