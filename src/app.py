@@ -222,6 +222,9 @@ if st.button("🚀 INICIAR CAMPAÑA"):
             if 'temp_dir' in locals() and os.path.exists(temp_dir):
                 import shutil
                 shutil.rmtree(temp_dir)
+            
+            # Borrar imagen de error temporal si fue una subida (no detectada en assets)
+            if 'temp_error_path' in locals() and temp_error_path and os.path.exists(temp_error_path) and "src" not in temp_error_path:
                 try:
                     os.remove(temp_error_path)
                 except:

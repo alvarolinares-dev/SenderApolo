@@ -63,6 +63,8 @@ def send_whatsapp_mac(phone, file_path, caption, log_callback, wait_time=15):
     # 4. Pegar Archivo (Cmd+V)
     log_callback("   🍎 (Mac) Pegando archivo...")
     pyautogui.hotkey('command', 'v')
+    time.sleep(1)
+    pyautogui.press('enter') # Confirmar archivo para que abra el área de caption
     time.sleep(3) # Esperar modal de vista previa
     
     # 5. Pegar Caption
@@ -89,6 +91,8 @@ def send_whatsapp_win(phone, file_path, caption, log_callback, wait_time=15):
     # 4. Pegar Archivo (Ctrl+V)
     log_callback("   🪟 (Win) Pegando archivo...")
     pyautogui.hotkey('ctrl', 'v')
+    time.sleep(1)
+    pyautogui.press('enter') # Confirmar archivo para que abra el área de caption
     time.sleep(3) # Esperar modal de vista previa
     
     # 5. Pegar Caption
