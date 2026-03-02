@@ -233,7 +233,7 @@ def process_newsletter(df, file_path, message_template, log_callback, error_imag
                     pyautogui.press('return')
                 
                 # Damos un pequeño respiro para que el sistema registre el cierre de la ventana
-                time.sleep(1)
+                time.sleep(3 if is_mac else 1)
                 
                 log_callback("   ✅ Envío completado.")
                 exitosos += 1
