@@ -166,8 +166,16 @@ def process_newsletter(df, file_path, message_template, log_callback, error_imag
                     # Lógica Windows (Copia-Pega mejorada para PDF/Imagen)
                     send_whatsapp_win(numero, file_path, mensaje, log_callback, wait_time=15)
                 
+                # --- ESPERA DINÁMICA SEGÚN TAMAÑO/TIPO ---
+                # Si es un PDF o archivo pesado, necesitamos más tiempo para que cargue
+                file_size_mb = os.path.getsize(file_path) / (1024 * 1024)
+                wait_extra = 0
+                if file_path.lower().endswith('.pdf') or file_size_mb > 5:
+                    log_callback(f"   ⏳ Archivo pesado ({file_size_mb:.1f}MB). Esperando carga adicional...")
+                    wait_extra = min(int(file_size_mb * 0.5), 15) # Máximo 15 segs extra
+                
                 log_callback("   ⏳ Esperando adjunto/preparación...")
-                time.sleep(3)
+                time.sleep(3 + wait_extra)
                 
                 # --- VISUAL ERROR CHECK START ---
                 error_detected = False
@@ -200,7 +208,8 @@ def process_newsletter(df, file_path, message_template, log_callback, error_imag
                 log_callback("   🚀 Enviando (Enter)...")
                 pyautogui.press('enter')
                 
-                time.sleep(2)
+                # Esperamos un poco más después de enviar para asegurar que el mensaje salga
+                time.sleep(5 + (wait_extra // 2)) 
                 
                 log_callback("   ❌ Cerrando pestaña...")
                 if is_mac:
