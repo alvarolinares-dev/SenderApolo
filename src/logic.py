@@ -217,6 +217,9 @@ def process_newsletter(df, file_path, message_template, log_callback, error_imag
                 else:
                     pyautogui.hotkey('ctrl', 'w')
                 
+                time.sleep(2)
+                pyautogui.press('enter') # Failsafe para el aviso "¿Quieres salir del sitio web?"
+                
                 log_callback("   ✅ Envío completado.")
                 exitosos += 1
                 
