@@ -33,11 +33,11 @@ def copy_file_to_clipboard_win(path):
     if not os.path.exists(abs_path):
         raise FileNotFoundError(f"No existe: {abs_path}")
     
-    # PowerShell command to set file to clipboard as FileDropList
-    # Using a slightly more robust way to ensure it's a file list
+    # PowerShell command to set file to clipboard as FileDropList (More robust version)
     ps_command = f'Add-Type -AssemblyName System.Windows.Forms; ' \
+                 f'$path = [System.IO.Path]::GetFullPath("{abs_path}"); ' \
                  f'$fileList = New-Object System.Collections.Specialized.StringCollection; ' \
-                 f'$fileList.Add("{abs_path}"); ' \
+                 f'$fileList.Add($path); ' \
                  f'[System.Windows.Forms.Clipboard]::SetFileDropList($fileList)'
     
     try:
@@ -47,7 +47,7 @@ def copy_file_to_clipboard_win(path):
         raise e
 
 # Función específica para Mac
-def send_whatsapp_mac(phone, file_path, caption, log_callback, wait_time=15):
+def send_whatsapp_mac(phone, file_path, caption, log_callback, wait_time=20):
     # 1. Copiar archivo
     log_callback("   🍎 (Mac) Copiando archivo al portapapeles...")
     copy_file_to_clipboard_mac(file_path)
@@ -63,9 +63,7 @@ def send_whatsapp_mac(phone, file_path, caption, log_callback, wait_time=15):
     # 4. Pegar Archivo (Cmd+V)
     log_callback("   🍎 (Mac) Pegando archivo...")
     pyautogui.hotkey('command', 'v')
-    time.sleep(1)
-    pyautogui.press('enter') # Confirmar archivo para que abra el área de caption
-    time.sleep(3) # Esperar modal de vista previa
+    time.sleep(4) # Esperar modal de vista previa
     
     # 5. Pegar Caption
     if caption:
@@ -75,7 +73,7 @@ def send_whatsapp_mac(phone, file_path, caption, log_callback, wait_time=15):
         time.sleep(1)
 
 # Función específica para Windows
-def send_whatsapp_win(phone, file_path, caption, log_callback, wait_time=15):
+def send_whatsapp_win(phone, file_path, caption, log_callback, wait_time=20):
     # 1. Copiar archivo
     log_callback("   🪟 (Win) Copiando archivo al portapapeles...")
     copy_file_to_clipboard_win(file_path)
@@ -91,9 +89,7 @@ def send_whatsapp_win(phone, file_path, caption, log_callback, wait_time=15):
     # 4. Pegar Archivo (Ctrl+V)
     log_callback("   🪟 (Win) Pegando archivo...")
     pyautogui.hotkey('ctrl', 'v')
-    time.sleep(1)
-    pyautogui.press('enter') # Confirmar archivo para que abra el área de caption
-    time.sleep(3) # Esperar modal de vista previa
+    time.sleep(4) # Esperar modal de vista previa
     
     # 5. Pegar Caption
     if caption:
@@ -164,11 +160,11 @@ def process_newsletter(df, file_path, message_template, log_callback, error_imag
             try:
                 if is_mac:
                     # Lógica MacOS
-                    send_whatsapp_mac(numero, file_path, mensaje, log_callback, wait_time=15)
+                    send_whatsapp_mac(numero, file_path, mensaje, log_callback, wait_time=20)
                     # Al salir de aquí, estamos en la pantalla de vista previa con texto pegado
                 else:
                     # Lógica Windows (Copia-Pega mejorada para PDF/Imagen)
-                    send_whatsapp_win(numero, file_path, mensaje, log_callback, wait_time=15)
+                    send_whatsapp_win(numero, file_path, mensaje, log_callback, wait_time=20)
                 
                 # --- ESPERA DINÁMICA SEGÚN TAMAÑO/TIPO ---
                 # Si es un PDF o archivo pesado, necesitamos más tiempo para que cargue
