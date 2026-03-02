@@ -132,7 +132,8 @@ Relaciones Institucionales Capitalia.
 # --- Execution ---
 st.divider()
 
-if st.button("🚀 INICIAR CAMPAÑA"):
+button_label = "🚀 INICIAR CAMPAÑA" if not st.session_state.campaign_running else "⏳ ENVÍO EN CURSO..."
+if st.button(button_label, disabled=st.session_state.campaign_running):
     if df_contactos is None:
         st.error("❌ Faltan contactos.")
     elif not uploaded_file:
