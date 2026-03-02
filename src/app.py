@@ -13,6 +13,12 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# --- Session State Initialization ---
+if 'campaign_running' not in st.session_state:
+    st.session_state.campaign_running = False
+if 'campaign_finished' not in st.session_state:
+    st.session_state.campaign_finished = False
+
 # --- CSS personalizado: Estilo TechCO (Dark & Green) ---
 # --- CSS personalizado: Ajustes mínimos ---
 st.markdown("""
@@ -141,6 +147,10 @@ if st.button("🚀 INICIAR CAMPAÑA"):
         with open(temp_file_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
         
+        # Reset state
+        st.session_state.campaign_running = True
+        st.session_state.campaign_finished = False
+        
         # Log area
         log_container = st.empty()
         
@@ -164,6 +174,8 @@ if st.button("🚀 INICIAR CAMPAÑA"):
                     update_log,
                     error_image_path=temp_error_path
                 )
+                st.session_state.campaign_running = False
+                st.session_state.campaign_finished = True
             
             # --- Results Report ---
             if result["status"] == "finished":
@@ -210,8 +222,14 @@ if st.button("🚀 INICIAR CAMPAÑA"):
             if 'temp_dir' in locals() and os.path.exists(temp_dir):
                 import shutil
                 shutil.rmtree(temp_dir)
-            if temp_error_path and os.path.exists(temp_error_path) and "src" not in temp_error_path:
                 try:
                     os.remove(temp_error_path)
                 except:
                     pass
+            st.session_state.campaign_running = False
+
+if st.session_state.campaign_finished:
+    st.success("✅ Campaña finalizada con éxito.")
+    if st.button("🔄 Iniciar Nueva Campaña"):
+        st.session_state.campaign_finished = False
+        st.rerun()

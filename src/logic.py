@@ -208,8 +208,8 @@ def process_newsletter(df, file_path, message_template, log_callback, error_imag
                 log_callback("   🚀 Enviando (Enter)...")
                 pyautogui.press('enter')
                 
-                # Esperamos un poco más después de enviar para asegurar que el mensaje salga
-                time.sleep(5 + (wait_extra // 2)) 
+                # Esperamos suficiente para que el mensaje se envíe y desaparezca cualquier modal
+                time.sleep(6 + (wait_extra // 2)) 
                 
                 log_callback("   ❌ Cerrando pestaña...")
                 if is_mac:
@@ -217,8 +217,9 @@ def process_newsletter(df, file_path, message_template, log_callback, error_imag
                 else:
                     pyautogui.hotkey('ctrl', 'w')
                 
+                # Failsafe ENTER eliminado porque re-activaba el botón de Streamlit si el foco volvía rápido
+                # Damos un pequeño respiro para que el sistema registre el cierre de la ventana
                 time.sleep(2)
-                pyautogui.press('enter') # Failsafe para el aviso "¿Quieres salir del sitio web?"
                 
                 log_callback("   ✅ Envío completado.")
                 exitosos += 1
