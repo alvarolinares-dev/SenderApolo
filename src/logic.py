@@ -60,6 +60,11 @@ def send_whatsapp_mac(phone, file_path, caption, log_callback, wait_time=20):
     # 3. Esperar carga
     time.sleep(wait_time)
     
+    # 3.5 Asegurar foco en navegador para Mac
+    log_callback("   🍎 (Mac) Asegurando foco en navegador...")
+    pyautogui.click(x=pyautogui.size().width // 2, y=200) # Clic en la parte superior del navegador
+    time.sleep(1)
+    
     # 4. Pegar Archivo (Cmd+V)
     log_callback("   🍎 (Mac) Pegando archivo...")
     pyautogui.hotkey('command', 'v')
@@ -221,6 +226,11 @@ def process_newsletter(df, file_path, message_template, log_callback, error_imag
                 # Usamos un tiempo corto para capturar el modal antes de que el foco vuelva a la app
                 time.sleep(1)
                 pyautogui.press('enter')
+                
+                # Refuerzo para Mac: Probar con 'return' y un log adicional
+                if is_mac:
+                    log_callback("   🍎 (Mac) Enviando refuerzo 'return' para cerrar modal...")
+                    pyautogui.press('return')
                 
                 # Damos un pequeño respiro para que el sistema registre el cierre de la ventana
                 time.sleep(1)
