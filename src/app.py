@@ -134,11 +134,12 @@ if st.button("🚀 INICIAR CAMPAÑA"):
     elif not message_text.strip():
         st.error("❌ Falta el mensaje.")
     else:
-        # Save file
-        file_ext = uploaded_file.name.split('.')[-1]
-        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{file_ext}") as temp_file:
-            temp_file.write(uploaded_file.getvalue())
-            temp_file_path = temp_file.name
+        # Save file with ORIGINAL NAME to a temporary directory
+        # This ensures WhatsApp shows the real filename instead of 'tmpXYZ.pdf'
+        temp_dir = tempfile.mkdtemp()
+        temp_file_path = os.path.join(temp_dir, uploaded_file.name)
+        with open(temp_file_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
         
         # Log area
         log_container = st.empty()
@@ -206,8 +207,9 @@ if st.button("🚀 INICIAR CAMPAÑA"):
             st.error(f"Error crítico: {e}")
         
         finally:
-            if os.path.exists(temp_file_path):
-                os.remove(temp_file_path)
+            if 'temp_dir' in locals() and os.path.exists(temp_dir):
+                import shutil
+                shutil.rmtree(temp_dir)
             if temp_error_path and os.path.exists(temp_error_path) and "src" not in temp_error_path:
                 try:
                     os.remove(temp_error_path)
