@@ -52,18 +52,13 @@ def send_whatsapp_mac(phone, file_path, caption, log_callback, wait_time=20):
     log_callback("   🍎 (Mac) Copiando archivo al portapapeles...")
     copy_file_to_clipboard_mac(file_path)
     
-    # 2. Abrir WhatsApp Web limpio (solo teléfono)
+    # 2. Abrir WhatsApp Web en NUEVA pestaña (fuerza nueva pestaña, evita problemas de foco)
     log_callback("   🍎 (Mac) Abriendo navegador...")
     url = f"https://web.whatsapp.com/send?phone={phone}"
-    webbrowser.open(url)
+    webbrowser.open_new_tab(url)  # open_new_tab garantiza pestaña nueva
     
     # 3. Esperar carga
     time.sleep(wait_time)
-    
-    # 3.5 Asegurar foco en navegador para Mac
-    log_callback("   🍎 (Mac) Asegurando foco en navegador...")
-    pyautogui.click(x=pyautogui.size().width // 2, y=200) # Clic en la parte superior del navegador
-    time.sleep(1)
     
     # 4. Pegar Archivo (Cmd+V)
     log_callback("   🍎 (Mac) Pegando archivo...")
