@@ -224,7 +224,8 @@ def process_newsletter(df, file_path, message_template, log_callback, error_imag
                     log_callback("   🍎 (Mac) Navegando a about:blank (mantener ventana abierta)...")
                     pyautogui.hotkey('command', 'l')  # Foco en barra de URL
                     time.sleep(0.5)
-                    pyautogui.typewrite('about:blank', interval=0.02)
+                    pyperclip.copy('about:blank')  # Copiar URL al portapapeles (evita problemas de teclado)
+                    pyautogui.hotkey('command', 'v')  # Pegar
                     time.sleep(0.3)
                     pyautogui.press('enter')
                     time.sleep(2)
