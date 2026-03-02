@@ -65,3 +65,13 @@ Se arregla muy fácil (parecido al paso anterior):
    - Pulsa **ENTER**.
 
 ¡Ahora sí! Dale doble click y funcionará.
+
+
+-------------------------------------------------------------------------
+NUEVA FUNCIÓN: ENVIAR PDF Y DOCUMENTOS
+-------------------------------------------------------------------------
+Ahora puedes enviar archivos PDF además de imágenes. 
+
+1. En la aplicación, selecciona tu archivo PDF en la sección "2. Archivo".
+2. Al iniciar la campaña, el programa usará AppleScript para copiar el PDF y pegarlo en WhatsApp.
+3. Recuerda no tocar nada mientras el programa hace el trabajo por ti.

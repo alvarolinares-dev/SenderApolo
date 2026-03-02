@@ -26,6 +26,14 @@ PASO 2: EJECUTAR EL PROGRAMA
 Nota: La primera vez puede tardar unos minutos instalando las librerías. Las próximas veces será rápido.
 
 
+PASO 3: ENVIAR PDF O IMÁGENES
+-----------------------------
+1. Una vez abierta la aplicación, en la sección "2. Archivo", podrás subir tanto fotos (JPG/PNG) como documentos PDF.
+2. Sube tu base de datos y escribe tu mensaje.
+3. Presiona "🚀 INICIAR CAMPAÑA".
+4. IMPORTANTE: El programa copiará el archivo y lo pegará en WhatsApp Web automáticamente. NO toques el mouse ni el teclado durante este proceso.
+
+
 PARA MAC (AMIGOS CON MACBOOK)
 =============================
 IMPORTANTE: Si te sale error de "Software malicioso" o "No se pudo verificar", lee el archivo "LEEME_MAC.txt".

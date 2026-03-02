@@ -11,35 +11,54 @@ import webbrowser
 import pyperclip
 from datetime import datetime
 
-# Helper para Mac: Copiar imagen al portapapeles
-def copy_image_to_clipboard_mac(path):
+# Helper para Mac: Copiar archivo al portapapeles
+def copy_file_to_clipboard_mac(path):
     abs_path = os.path.abspath(path)
     if not os.path.exists(abs_path):
         raise FileNotFoundError(f"No existe: {abs_path}")
         
     ext = os.path.splitext(abs_path)[1].lower()
     # Determinar tipo de archivo para AppleScript
-    if ext in ['.png']:
+    if ext == '.png':
         file_type = "«class PNGf»"
     elif ext in ['.jpg', '.jpeg']:
         file_type = "JPEG picture"
+    elif ext == '.pdf':
+        file_type = "«class PDF »"
     else:
-        file_type = "TIFF picture" # Intento genérico
+        file_type = "TIFF picture"
 
-    cmd = f'''
-    set the clipboard to (read (POSIX file "{abs_path}") as {file_type})
-    '''
+    cmd = f'set the clipboard to (read (POSIX file "{abs_path}") as {file_type})'
+
     try:
         subprocess.run(["osascript", "-e", cmd], check=True)
     except Exception as e:
-        print(f"Error Mac Clipboard: {e}")
+        # Fallback para archivos generales
+        cmd_backup = f'set the clipboard to (POSIX file "{abs_path}")'
+        subprocess.run(["osascript", "-e", cmd_backup], check=True)
+
+# Helper para Windows: Copiar archivo al portapapeles (FileDropList)
+def copy_file_to_clipboard_win(path):
+    abs_path = os.path.abspath(path)
+    if not os.path.exists(abs_path):
+        raise FileNotFoundError(f"No existe: {abs_path}")
+    
+    # PowerShell command to set file to clipboard as FileDropList
+    ps_command = f'Add-Type -AssemblyName System.Windows.Forms; ' \
+                 f'$file = Get-Item "{abs_path}"; ' \
+                 f'[System.Windows.Forms.Clipboard]::SetFileDropList([System.Collections.Specialized.StringCollection]@($file.FullName))'
+    
+    try:
+        subprocess.run(["powershell", "-Command", ps_command], check=True)
+    except Exception as e:
+        print(f"Error Windows Clipboard: {e}")
         raise e
 
 # Función específica para Mac
-def send_whatsapp_mac(phone, image_path, caption, log_callback, wait_time=15):
-    # 1. Copiar imagen
-    log_callback("   🍎 (Mac) Copiando imagen al portapapeles...")
-    copy_image_to_clipboard_mac(image_path)
+def send_whatsapp_mac(phone, file_path, caption, log_callback, wait_time=15):
+    # 1. Copiar archivo
+    log_callback("   🍎 (Mac) Copiando archivo al portapapeles...")
+    copy_file_to_clipboard_mac(file_path)
     
     # 2. Abrir WhatsApp Web limpio (solo teléfono)
     log_callback("   🍎 (Mac) Abriendo navegador...")
@@ -49,10 +68,10 @@ def send_whatsapp_mac(phone, image_path, caption, log_callback, wait_time=15):
     # 3. Esperar carga
     time.sleep(wait_time)
     
-    # 4. Pegar Imagen (Cmd+V)
-    log_callback("   🍎 (Mac) Pegando imagen...")
+    # 4. Pegar Archivo (Cmd+V)
+    log_callback("   🍎 (Mac) Pegando archivo...")
     pyautogui.hotkey('command', 'v')
-    time.sleep(2) # Esperar modal de vista previa
+    time.sleep(3) # Esperar modal de vista previa
     
     # 5. Pegar Caption
     if caption:
@@ -61,16 +80,42 @@ def send_whatsapp_mac(phone, image_path, caption, log_callback, wait_time=15):
         pyautogui.hotkey('command', 'v')
         time.sleep(1)
 
-def process_newsletter(df, image_path, message_template, log_callback, error_image_path=None):
+# Función específica para Windows
+def send_whatsapp_win(phone, file_path, caption, log_callback, wait_time=15):
+    # 1. Copiar archivo
+    log_callback("   🪟 (Win) Copiando archivo al portapapeles...")
+    copy_file_to_clipboard_win(file_path)
+    
+    # 2. Abrir WhatsApp Web
+    log_callback("   🪟 (Win) Abriendo navegador...")
+    url = f"https://web.whatsapp.com/send?phone={phone}"
+    webbrowser.open(url)
+    
+    # 3. Esperar carga
+    time.sleep(wait_time)
+    
+    # 4. Pegar Archivo (Ctrl+V)
+    log_callback("   🪟 (Win) Pegando archivo...")
+    pyautogui.hotkey('ctrl', 'v')
+    time.sleep(3) # Esperar modal de vista previa
+    
+    # 5. Pegar Caption
+    if caption:
+        log_callback("   🪟 (Win) Pegando mensaje...")
+        pyperclip.copy(caption)
+        pyautogui.hotkey('ctrl', 'v')
+        time.sleep(1)
+
+def process_newsletter(df, file_path, message_template, log_callback, error_image_path=None):
     """
     Ejecuta la lógica de envío del boletín.
     """
     
-    if not image_path or not os.path.exists(image_path):
-        log_callback(f"❌ ERROR: No se encontró la imagen: {image_path}")
-        return {"status": "error", "message": "Imagen no encontrada", "details": []}
+    if not file_path or not os.path.exists(file_path):
+        log_callback(f"❌ ERROR: No se encontró el archivo: {file_path}")
+        return {"status": "error", "message": "Archivo no encontrado", "details": []}
 
-    log_callback(f"✅ Imagen seleccionada: {image_path}")
+    log_callback(f"✅ Archivo seleccionado: {file_path}")
     if error_image_path:
         log_callback(f"✅ Detección visual de errores ACTIVA 📸")
         
@@ -123,17 +168,11 @@ def process_newsletter(df, image_path, message_template, log_callback, error_ima
             try:
                 if is_mac:
                     # Lógica MacOS
-                    send_whatsapp_mac(numero, image_path, mensaje, log_callback, wait_time=15)
+                    send_whatsapp_mac(numero, file_path, mensaje, log_callback, wait_time=15)
                     # Al salir de aquí, estamos en la pantalla de vista previa con texto pegado
                 else:
-                    # Lógica Windows (Original)
-                    pywhatkit.sendwhats_image(
-                        receiver=numero,
-                        img_path=image_path,
-                        caption=mensaje,
-                        wait_time=15, 
-                        tab_close=False 
-                    )
+                    # Lógica Windows (Copia-Pega mejorada para PDF/Imagen)
+                    send_whatsapp_win(numero, file_path, mensaje, log_callback, wait_time=15)
                 
                 log_callback("   ⏳ Esperando adjunto/preparación...")
                 time.sleep(3)

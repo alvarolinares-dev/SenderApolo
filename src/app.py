@@ -100,8 +100,8 @@ with col1:
         except Exception as e:
             st.error(f"Error: {e}")
 
-    st.subheader("2. Imagen")
-    uploaded_image = st.file_uploader("Imagen para enviar", type=["png", "jpg", "jpeg"])
+    st.subheader("2. Archivo (Imagen o PDF)")
+    uploaded_file = st.file_uploader("Imagen o PDF para enviar", type=["png", "jpg", "jpeg", "pdf"])
     
     # Removed Error Uploader as it is now auto-detected from src/assets/error_popup.png
 
@@ -129,15 +129,16 @@ st.divider()
 if st.button("🚀 INICIAR CAMPAÑA"):
     if df_contactos is None:
         st.error("❌ Faltan contactos.")
-    elif not uploaded_image:
-        st.error("❌ Falta la imagen.")
+    elif not uploaded_file:
+        st.error("❌ Falta el archivo (Imagen o PDF).")
     elif not message_text.strip():
         st.error("❌ Falta el mensaje.")
     else:
-        # Save image
-        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{uploaded_image.name.split('.')[-1]}") as temp_img:
-            temp_img.write(uploaded_image.getvalue())
-            temp_img_path = temp_img.name
+        # Save file
+        file_ext = uploaded_file.name.split('.')[-1]
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{file_ext}") as temp_file:
+            temp_file.write(uploaded_file.getvalue())
+            temp_file_path = temp_file.name
         
         # Log area
         log_container = st.empty()
@@ -157,7 +158,7 @@ if st.button("🚀 INICIAR CAMPAÑA"):
             with st.spinner('Enviando mensajes...'):
                 result = process_newsletter(
                     df_contactos, 
-                    temp_img_path, 
+                    temp_file_path, 
                     message_text, 
                     update_log,
                     error_image_path=temp_error_path
@@ -205,8 +206,8 @@ if st.button("🚀 INICIAR CAMPAÑA"):
             st.error(f"Error crítico: {e}")
         
         finally:
-            if os.path.exists(temp_img_path):
-                os.remove(temp_img_path)
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
             if temp_error_path and os.path.exists(temp_error_path) and "src" not in temp_error_path:
                 try:
                     os.remove(temp_error_path)
