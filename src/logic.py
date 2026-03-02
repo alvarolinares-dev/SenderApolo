@@ -16,26 +16,16 @@ def copy_file_to_clipboard_mac(path):
     abs_path = os.path.abspath(path)
     if not os.path.exists(abs_path):
         raise FileNotFoundError(f"No existe: {abs_path}")
-        
-    ext = os.path.splitext(abs_path)[1].lower()
-    # Determinar tipo de archivo para AppleScript
-    if ext == '.png':
-        file_type = "«class PNGf»"
-    elif ext in ['.jpg', '.jpeg']:
-        file_type = "JPEG picture"
-    elif ext == '.pdf':
-        file_type = "«class PDF »"
-    else:
-        file_type = "TIFF picture"
-
-    cmd = f'set the clipboard to (read (POSIX file "{abs_path}") as {file_type})'
-
+    
+    # AppleScript: Set the clipboard to the file object itself
+    # This ensures WhatsApp sees it as a file, not as raw data (like an image)
+    cmd = f'set the clipboard to (POSIX file "{abs_path}")'
+    
     try:
         subprocess.run(["osascript", "-e", cmd], check=True)
     except Exception as e:
-        # Fallback para archivos generales
-        cmd_backup = f'set the clipboard to (POSIX file "{abs_path}")'
-        subprocess.run(["osascript", "-e", cmd_backup], check=True)
+        print(f"Error Mac Clipboard: {e}")
+        raise e
 
 # Helper para Windows: Copiar archivo al portapapeles (FileDropList)
 def copy_file_to_clipboard_win(path):
@@ -44,9 +34,11 @@ def copy_file_to_clipboard_win(path):
         raise FileNotFoundError(f"No existe: {abs_path}")
     
     # PowerShell command to set file to clipboard as FileDropList
+    # Using a slightly more robust way to ensure it's a file list
     ps_command = f'Add-Type -AssemblyName System.Windows.Forms; ' \
-                 f'$file = Get-Item "{abs_path}"; ' \
-                 f'[System.Windows.Forms.Clipboard]::SetFileDropList([System.Collections.Specialized.StringCollection]@($file.FullName))'
+                 f'$fileList = New-Object System.Collections.Specialized.StringCollection; ' \
+                 f'$fileList.Add("{abs_path}"); ' \
+                 f'[System.Windows.Forms.Clipboard]::SetFileDropList($fileList)'
     
     try:
         subprocess.run(["powershell", "-Command", ps_command], check=True)
