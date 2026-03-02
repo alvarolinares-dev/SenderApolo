@@ -48,29 +48,41 @@ def copy_file_to_clipboard_win(path):
 
 # Función específica para Mac
 def send_whatsapp_mac(phone, file_path, caption, log_callback, wait_time=20):
-    # 1. Copiar archivo
+    url = f"https://web.whatsapp.com/send?phone={phone}"
+
+    # 1. Abrir NUEVA PESTAÑA con Cmd+T y navegar por clipboard (foco garantizado)
+    log_callback("   🍎 (Mac) Abriendo nueva pestaña...")
+    pyautogui.hotkey('command', 't')   # Nueva pestaña
+    time.sleep(0.8)
+    pyperclip.copy(url)
+    pyautogui.hotkey('command', 'l')   # Foco en barra de URL
+    time.sleep(0.3)
+    pyautogui.hotkey('command', 'a')   # Seleccionar todo en barra URL
+    time.sleep(0.2)
+    pyautogui.hotkey('command', 'v')   # Pegar URL
+    time.sleep(0.3)
+    pyautogui.press('enter')
+
+    # 2. Esperar carga de WhatsApp
+    log_callback(f"   🍎 (Mac) Esperando carga ({wait_time}s)...")
+    time.sleep(wait_time)
+
+    # 3. Copiar archivo al portapapeles y pegar
     log_callback("   🍎 (Mac) Copiando archivo al portapapeles...")
     copy_file_to_clipboard_mac(file_path)
-    
-    # 2. Abrir WhatsApp Web en NUEVA pestaña (fuerza nueva pestaña, evita problemas de foco)
-    log_callback("   🍎 (Mac) Abriendo navegador...")
-    url = f"https://web.whatsapp.com/send?phone={phone}"
-    webbrowser.open_new_tab(url)  # open_new_tab garantiza pestaña nueva
-    
-    # 3. Esperar carga
-    time.sleep(wait_time)
-    
-    # 4. Pegar Archivo (Cmd+V)
+    time.sleep(1)  # Esperar a que el portapapeles se actualice
+
     log_callback("   🍎 (Mac) Pegando archivo...")
     pyautogui.hotkey('command', 'v')
-    time.sleep(4) # Esperar modal de vista previa
-    
-    # 5. Pegar Caption
+    time.sleep(4)  # Esperar modal de vista previa del archivo
+
+    # 4. Pegar Caption en el campo de texto del modal
     if caption:
         log_callback("   🍎 (Mac) Pegando mensaje...")
         pyperclip.copy(caption)
         pyautogui.hotkey('command', 'v')
         time.sleep(1)
+
 
 # Función específica para Windows
 def send_whatsapp_win(phone, file_path, caption, log_callback, wait_time=20):
@@ -213,21 +225,16 @@ def process_newsletter(df, file_path, message_template, log_callback, error_imag
                 
                 log_callback("   ❌ Cerrando pestaña...")
                 if is_mac:
-                    # Mac: Navegar a about:blank en lugar de cerrar la pestaña
-                    # Command+W cierra toda la VENTANA en Mac si es la última pestaña,
-                    # lo que impide que webbrowser.open() funcione para el siguiente mensaje.
-                    log_callback("   🍎 (Mac) Navegando a about:blank (mantener ventana abierta)...")
-                    pyautogui.hotkey('command', 'l')  # Foco en barra de URL
-                    time.sleep(0.5)
-                    pyperclip.copy('about:blank')  # Copiar URL al portapapeles (evita problemas de teclado)
-                    pyautogui.hotkey('command', 'v')  # Pegar
-                    time.sleep(0.3)
-                    pyautogui.press('enter')
-                    time.sleep(2)
+                    # Mac: Cerrar pestaña de WhatsApp con Cmd+W
+                    # Es seguro porque siempre hay otras pestañas abiertas (Streamlit, etc.)
+                    pyautogui.hotkey('command', 'w')
+                    # Esperar el diálogo "¿Quieres salir?" y confirmarlo con Return
+                    time.sleep(1.5)
+                    pyautogui.press('return')   # Return es la tecla estándar en Mac para confirmar diálogos
+                    time.sleep(1.5)
                 else:
                     # Windows: Cerrar pestaña normalmente
                     pyautogui.hotkey('ctrl', 'w')
-                    # Failsafe para el aviso "¿Quieres salir del sitio web?" del navegador
                     time.sleep(1)
                     pyautogui.press('enter')
                     time.sleep(1)
